@@ -2,7 +2,7 @@
 
 **Serius Miliyani Dwi Putri**
 M.Ked.Trop (Epidemiology, Tropical Medicine)
-*Proof-of-concept analysis · 2025*
+*Proof-of-concept analysis · 2026*
 
 ## Abstract
 
