@@ -1,0 +1,9 @@
+DLNM negative-binomial model - East Java dengue vs climate
+============================================================
+Climate source: REAL (Open-Meteo)
+Months analysed: 223 (2004-01-01 to 2024-07-01)
+Max lag: 6 months | var df: 4 | lag df: 4
+NB dispersion alpha: 0.077
+Deviance pseudo-R2: 0.841
+Strongest temp cross-correlation at lag 4 mo (r=0.37)
+Strongest rain cross-correlation at lag 1 mo (r=0.55)

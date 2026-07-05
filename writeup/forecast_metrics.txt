@@ -1,0 +1,19 @@
+Out-of-sample forecast skill (train 2004-2019, test 2020-2024)
+==============================================================
+Climate source: REAL (Open-Meteo)
+
+East Java:
+  RMSE baseline=965  climate=899  climate+indices=783
+  corr baseline=0.38  climate=0.53  climate+indices=0.70
+  outbreak sensitivity climate=0.43 baseline=0.00; specificity climate=0.87 baseline=1.00
+
+Per-province correlation with held-out cases (baseline / climate / climate+ENSO-IOD)
+and RMSE skill of climate vs baseline (+ve = climate helps):
+     province  r_baseline  r_climate  r_clim+idx  rmse_skill_%
+         BALI        0.61       0.87        0.73          4.95
+       BANTEN       -0.03      -0.05       -0.04        -45.67
+DI YOGYAKARTA        0.42       0.18        0.53         -2.82
+  DKI JAKARTA        0.29       0.21        0.20        -28.59
+   JAWA BARAT        0.25       0.40        0.44          0.65
+  JAWA TENGAH        0.23       0.00        0.34        -17.31
+   JAWA TIMUR        0.38       0.53        0.70          6.92

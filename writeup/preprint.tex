@@ -1,0 +1,217 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{authblk}
+\captionsetup{font=small,labelfont=bf}
+\titleformat{\section}{\normalfont\large\bfseries\color{black!85}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries\color{black!75}}{\thesubsection}{0.5em}{}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\renewcommand{\baselinestretch}{1.05}
+
+\title{\textbf{Climate-driven dengue early warning in Indonesia:\\
+an East Java case study with a seven-province comparison}}
+\author[ ]{Serius Miliyani Dwi Putri}
+\affil[ ]{\small M.Ked.Trop (Epidemiology, Tropical Medicine)\\
+Research Manager, Climate and Health Centre, Universitas Brawijaya\\
+\texttt{Proof-of-concept analysis}}
+\date{\small 2025}
+
+\begin{document}
+\maketitle
+
+\vspace{-1.2em}
+\noindent\rule{\textwidth}{0.4pt}
+\begin{abstract}
+\noindent Dengue transmission in Indonesia is strongly climate-sensitive, yet
+routine surveillance remains largely reactive. As a compact, reproducible
+demonstration of the modelling that underpins climate-based early-warning
+systems, I link open monthly dengue surveillance (OpenDengue v1.3) with open
+climate reanalysis (Open-Meteo / ERA5) and fit negative-binomial distributed-lag
+non-linear models (DLNMs) of dengue \emph{incidence}. A single-province analysis
+for East Java (2004--2024) is extended to a pooled seven-province model spanning
+Java and Bali, with a population offset and province-specific baselines. Across
+all provinces the strongest rainfall signal occurs at a delay of two to three
+months, consistent with the biological lag between rainfall, vector breeding and
+onward transmission. The pipeline is intended as a portfolio artefact and the
+foundation for a doctoral programme on operational dengue early warning.
+\end{abstract}
+\noindent\rule{\textwidth}{0.4pt}
+
+\section{Background}
+Dengue is among the fastest-growing vector-borne diseases worldwide, and
+Indonesia carries one of the highest burdens in Southeast Asia. Temperature and
+rainfall govern \emph{Aedes} survival, biting rates and the extrinsic incubation
+period, with effects that unfold over weeks to months. That delayed structure is
+precisely what a distributed-lag model quantifies, and it is what makes
+forecasting with useful lead time possible. This note is a deliberately minimal
+first step: real surveillance data, an open climate source, and a standard,
+defensible model, released reproducibly.
+
+\section{Data}
+Monthly, province-level (Admin1) reported dengue case counts were extracted from
+the OpenDengue database v1.3, which standardises publicly available surveillance
+data. Seven provinces with near-complete monthly coverage were retained (East
+Java, West Java, Central Java, DKI Jakarta, Banten, Bali and DI Yogyakarta),
+spanning January 2004 to July 2024. Provincial population (BPS Statistics
+Indonesia census and intercensal projections) was interpolated to monthly values
+and used as a model offset, converting counts to incidence. Monthly mean
+temperature, total rainfall and relative humidity were obtained from the
+Open-Meteo Historical Weather API (ERA5-based reanalysis) at representative
+provincial coordinates.\footnote{The figures shown here use a clearly-labelled
+synthetic climate series so the pipeline runs without network access; replacing
+it with real Open-Meteo data is a single scripted step. Figures generated from
+synthetic climate are tagged accordingly.}
+
+\section{Methods}
+Case counts $Y_{p,t}$ in province $p$ and month $t$ were modelled with a
+negative-binomial GLM,
+\begin{equation*}
+\log \mathbb{E}[Y_{p,t}] = \log N_{p,t} + \alpha_p
++ \mathrm{cb}_{\text{temp}}(x_{p,t},\ell)
++ \mathrm{cb}_{\text{rain}}(r_{p,t},\ell)
++ s(\text{month}_t) + f_p(t),
+\end{equation*}
+where $N_{p,t}$ is population (offset), $\alpha_p$ a province-specific intercept,
+and each \emph{cross-basis} $\mathrm{cb}(\cdot)$ is a tensor product of a
+natural-spline exposure--response basis and a natural-spline lag--response basis
+over lags $\ell = 0,\dots,6$ months (Gasparrini 2011). Seasonality $s(\cdot)$
+uses cyclic terms and the trend $f_p(t)$ a natural spline on time. Negative
+binomial errors accommodate overdispersion. Estimates are summarised as
+cumulative relative risks (RR) over the 0--6 month lag window, centred at the
+median exposure. Two implementations are provided: a self-contained Python
+version and the canonical \texttt{dlnm} R package.
+
+\section{Results}
+\subsection{East Java}
+Dengue incidence is strongly seasonal, peaking in the wet-season months
+(January--March) and lowest in August--September (Figure~\ref{fig:ts}). The
+strongest rainfall--dengue cross-correlation occurs at a two-month lag. The
+cumulative exposure--response indicates rising dengue risk with increasing
+monthly rainfall across the observed range (Figure~\ref{fig:er}). The
+negative-binomial DLNM fits the series closely.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/fig1_timeseries.png}
+\caption{East Java: monthly dengue cases and climate, 2004--2024
+(OpenDengue v1.3).}
+\label{fig:ts}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.66\textwidth]{figures/fig4_er_rainfall.png}
+\caption{East Java cumulative exposure--response for monthly rainfall
+(0--6 month lag), relative to the median. Shaded band: 95\% CI.}
+\label{fig:er}
+\end{figure}
+
+\subsection{Seven provinces}
+Extending to a pooled seven-province incidence model preserves the pattern while
+revealing between-province heterogeneity. Incidence trajectories differ markedly
+in level and timing (Figure~\ref{fig:panel}), yet the peak rainfall--dengue
+association clusters at a two-to-three month lag in every province
+(Figure~\ref{fig:het}). This consistency of the delayed rainfall effect, against
+a backdrop of heterogeneous baseline risk, is exactly the structure an
+early-warning system can exploit.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/mp_fig1_incidence_panel.png}
+\caption{Monthly dengue incidence per 100{,}000 by province, 2004--2024.}
+\label{fig:panel}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/mp_fig4_heterogeneity.png}
+\caption{Between-province heterogeneity: peak rainfall--dengue correlation and
+the lag (months) at which it occurs.}
+\label{fig:het}
+\end{figure}
+
+\subsection{Large-scale drivers: ENSO and IOD}
+Local weather is itself modulated by large-scale climate modes. Two were added
+to the East Java model as additional cross-bases: the El Ni\~no--Southern
+Oscillation, via the Oceanic Ni\~no Index (ONI), and the Indian Ocean Dipole,
+via the Dipole Mode Index (DMI) --- the latter especially relevant to Indonesian
+rainfall. The estimated exposure--response for ONI (Figure~\ref{fig:oni})
+summarises how dengue risk varies across La Ni\~na and El Ni\~no states,
+cumulated over a six-month lag. Because these indices partly act \emph{through}
+local rainfall, they are naturally collinear with it; whether they add
+independent predictive value is an empirical question addressed next.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.66\textwidth]{figures/fig6_er_oni.png}
+\caption{East Java cumulative exposure--response for ENSO (ONI), 0--6 month lag,
+relative to neutral conditions. Shaded band: 95\% CI.}
+\label{fig:oni}
+\end{figure}
+
+\subsection{Forecast skill}
+To move from association to a genuine early-warning prototype, the model was
+trained on 2004--2019 and evaluated on the held-out 2020--2024 period, against a
+seasonal ``climatology'' baseline containing no climate information. For East
+Java the climate DLNM improved the out-of-sample forecast substantially
+(correlation with observed cases $0.70$ versus $0.38$ for the baseline; an RMSE
+skill gain of roughly one fifth) and detected a larger share of true outbreak
+months (Figure~\ref{fig:fc}). Adding ENSO and IOD indices at fixed lags did not
+improve out-of-sample skill here (correlation $0.65$): in this demonstration the
+indices are largely redundant with local rainfall, and entering them instead as
+flexible cross-bases \emph{raised} in-sample fit while \emph{lowering} held-out
+skill --- a textbook reminder that fit and forecast are different targets. Skill
+was also heterogeneous across provinces --- unsurprising given single-point
+climate proxies, the COVID-19 disruption to 2020--2021 surveillance, and the
+synthetic climate used here. Establishing where and when these drivers add
+genuine forecast value, with real reanalysis and seasonal-forecast climate, is
+itself a core research question.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/fc_fig1_eastjava_forecast.png}
+\caption{East Java out-of-sample forecast. The model is trained only on
+2004--2019; the shaded region (2020--2024) is held out. The climate DLNM tracks
+the held-out epidemics more closely than the seasonal baseline.}
+\label{fig:fc}
+\end{figure}
+
+\section{Discussion}
+This analysis reproduces, at small scale, the core building block of a dengue
+early-warning system: an interpretable, lagged climate--incidence relationship
+estimated with a standard model, and shown to be reasonably consistent across
+seven provinces. It is deliberately limited: single climate points per province,
+no formal forecast evaluation, and surveillance case definitions that vary over
+the source period. A doctoral programme would address exactly these gaps ---
+fully hierarchical spatio-temporal models, forecast-skill evaluation against
+held-out epidemics, incorporation of ENSO, urbanisation and mobility, and
+district-level alert thresholds co-designed with health authorities, and
+forecast evaluation with proper probabilistic scoring rules and seasonal-forecast
+climate rather than the single hold-out shown here.
+
+\section*{Reproducibility}
+\small
+All code and the real dengue extract are openly available. The analysis runs
+end-to-end from the command line; real climate is obtained via a single script
+(Open-Meteo, no API key).
+
+\section*{Key references}
+\small
+Gasparrini A. Distributed lag linear and non-linear models in R: the package
+dlnm. \emph{J Stat Softw.} 2011;43(8). \quad
+Lowe R, et al. Combined effects of hydrometeorological hazards and urbanisation
+on dengue risk in Brazil. \emph{Lancet Planet Health.} 2021. \quad
+Clarke J, et al. A global dataset of publicly available dengue case count data.
+\emph{Sci Data.} 2024;11:296. \quad
+Col\'on-Gonz\'alez FJ, et al. Projecting the risk of mosquito-borne diseases in a
+warmer and more populated world. \emph{Lancet Planet Health.} 2021.
+
+\end{document}
