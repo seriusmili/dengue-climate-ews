@@ -14,7 +14,7 @@ incidence, quantifies the delayed effect of climate, and tests whether that sign
 improves forecasts of held-out epidemics.
 
 > **Author:** Serius Miliyani Dwi Putri — M.Ked.Trop (Epidemiology, Tropical
-> Medicine). Research Manager, Climate and Health Centre, Universitas Brawijaya.
+> Medicine).
 
 ---
 
